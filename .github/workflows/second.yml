@@ -1,0 +1,32 @@
+name: Deploy Workflow
+
+on:
+  push:
+    branches:
+      - main
+
+  workflow_dispatch:  # Permite acionar manualmente para aprovar
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Preparação para deploy
+        run: echo "Preparação concluída."
+
+  wait-for-approval:
+    runs-on: ubuntu-latest
+    needs: prepare
+    steps:
+      - name: Aguardando aprovação
+        run: |
+          echo "Aguardando aprovação manual..."
+          exit 1  # Faz o job falhar de propósito para travar o fluxo
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: wait-for-approval
+    if: github.event_name == 'workflow_dispatch'  # Só continua se for acionado manualmente
+    steps:
+      - name: Deploy app
+        run: echo "Deploy em andamento..."
